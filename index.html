@@ -40,28 +40,13 @@
       margin: 0 auto;
     }
 
-    header {
-      margin-bottom: 2rem;
-    }
+    header { margin-bottom: 2rem; }
 
-    .logo-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 6px;
+    .logo-img {
+      height: 72px;
+      width: auto;
+      display: block;
     }
-
-    .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: var(--text);
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .logo-icon svg { display: block; }
 
     h1 {
       font-size: 22px;
@@ -270,17 +255,8 @@
 <body>
 <div class="page">
   <header>
-    <div class="logo-row">
-      <div class="logo-icon">
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-          <rect x="1" y="7" width="16" height="8" rx="2" fill="white"/>
-          <path d="M3 7 L5 3 H13 L15 7" fill="white"/>
-          <circle cx="5" cy="15" r="1.5" fill="#1a1a18"/>
-          <circle cx="13" cy="15" r="1.5" fill="#1a1a18"/>
-        </svg>
-      </div>
-      <h1>Auction Cost Calculator</h1>
-    </div>
+    <img src="alfursan_logo2.PNG" alt="Al Fursan Auto Export" class="logo-img" />
+    <h1>Auction Cost Calculator</h1>
     <p class="tagline">Estimate your total vehicle acquisition cost before you bid.</p>
   </header>
 
