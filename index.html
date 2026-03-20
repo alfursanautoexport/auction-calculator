@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vehicle Auction Cost Calculator</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f5f4f0;
+      --surface: #ffffff;
+      --surface2: #f0efe9;
+      --border: rgba(0,0,0,0.1);
+      --border-md: rgba(0,0,0,0.18);
+      --text: #1a1a18;
+      --text-muted: #6b6b62;
+      --text-faint: #9b9b90;
+      --blue: #185FA5;
+      --blue-bg: #e8f0fb;
+      --green: #0F6E56;
+      --green-bg: #e1f5ee;
+      --amber: #854F0B;
+      --red: #993C1D;
+      --radius: 10px;
+      --radius-sm: 6px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .page {
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2rem;
+    }
+
+    .logo-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--text);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-icon svg { display: block; }
+
+    h1 {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .tagline {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 10px;
+    }
+
+    .step-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: var(--text-faint);
+      margin-bottom: 12px;
+    }
+
+    .step-num {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
+    }
+
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 9px 18px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      color: var(--text);
+      transition: background 0.12s, border-color 0.12s, color 0.12s, transform 0.08s;
+    }
+    .btn:hover { background: #e8e7e0; }
+    .btn:active { transform: scale(0.97); }
+
+    .btn.sel-copart { background: var(--blue); border-color: var(--blue); color: #fff; }
+    .btn.sel-iaa    { background: var(--green); border-color: var(--green); color: #fff; }
+    .btn.sel-full   { background: var(--red); border-color: var(--red); color: #fff; }
+    .btn.sel-half   { background: var(--amber); border-color: var(--amber); color: #fff; }
+    .btn.sel-none   { background: var(--surface2); border-color: var(--border-md); color: var(--text); }
+
+    .input-wrap {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      border: 1px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--surface);
+      transition: border-color 0.12s, box-shadow 0.12s;
+    }
+    .input-wrap:focus-within {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(24,95,165,0.1);
+    }
+    .input-prefix {
+      padding: 0 12px;
+      font-size: 15px;
+      color: var(--text-muted);
+      background: var(--surface2);
+      border-right: 1px solid var(--border);
+      height: 40px;
+      display: flex;
+      align-items: center;
+      font-family: 'DM Mono', monospace;
+    }
+    input[type=number] {
+      flex: 1;
+      height: 40px;
+      border: none;
+      outline: none;
+      padding: 0 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      color: var(--text);
+      background: transparent;
+    }
+    input[type=number]::-webkit-outer-spin-button,
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+    select {
+      width: 100%;
+      height: 40px;
+      border: 1px solid var(--border-md);
+      border-radius: var(--radius-sm);
+      padding: 0 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    select:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
+
+    /* Summary card */
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.25rem;
+      margin-bottom: 10px;
+    }
+
+    .ph {
+      color: var(--text-faint);
+      font-size: 14px;
+      font-style: italic;
+      padding: 0.5rem 0;
+    }
+
+    .fee-table { width: 100%; border-collapse: collapse; }
+    .fee-table td { padding: 6px 0; font-size: 14px; }
+    .fee-table td:last-child {
+      text-align: right;
+      font-family: 'DM Mono', monospace;
+      font-size: 13px;
+    }
+    .fee-table .row-main td { font-weight: 500; }
+    .fee-table .row-sub td { color: var(--text-muted); }
+    .fee-table .row-divider td {
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+    }
+    .fee-table .row-total td {
+      font-size: 17px;
+      font-weight: 600;
+      padding-top: 4px;
+      letter-spacing: -0.01em;
+    }
+
+    .auction-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .badge-copart { background: var(--blue-bg); color: var(--blue); }
+    .badge-iaa    { background: var(--green-bg); color: var(--green); }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .metric {
+      background: var(--surface2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      border: 1px solid var(--border);
+    }
+    .metric-label { font-size: 11px; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 4px; }
+    .metric-value { font-size: 18px; font-weight: 600; font-family: 'DM Mono', monospace; letter-spacing: -0.02em; }
+
+    .note { font-size: 12px; color: var(--text-faint); margin-top: 10px; font-style: italic; }
+
+    footer {
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-faint);
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 480px) {
+      .metrics { grid-template-columns: repeat(2, 1fr); }
+      .metrics .metric:last-child { grid-column: span 2; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="logo-row">
+      <div class="logo-icon">
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+          <rect x="1" y="7" width="16" height="8" rx="2" fill="white"/>
+          <path d="M3 7 L5 3 H13 L15 7" fill="white"/>
+          <circle cx="5" cy="15" r="1.5" fill="#1a1a18"/>
+          <circle cx="13" cy="15" r="1.5" fill="#1a1a18"/>
+        </svg>
+      </div>
+      <h1>Auction Cost Calculator</h1>
+    </div>
+    <p class="tagline">Estimate your total vehicle acquisition cost before you bid.</p>
+  </header>
+
+  <!-- Step 1 -->
+  <div class="card">
+    <div class="step-label"><span class="step-num">1</span> Select auction</div>
+    <div class="btn-group">
+      <button class="btn" id="bc" onclick="setA('copart')">Copart</button>
+      <button class="btn" id="bi" onclick="setA('iaa')">IAA</button>
+    </div>
+  </div>
+
+  <!-- Step 2 -->
+  <div class="card">
+    <div class="step-label"><span class="step-num">2</span> Estimated final bid</div>
+    <div class="input-wrap">
+      <span class="input-prefix">$</span>
+      <input type="number" id="bid" placeholder="0.00" min="0" step="100" oninput="calc()" />
+    </div>
+  </div>
+
+  <!-- Step 3 -->
+  <div class="card">
+    <div class="step-label"><span class="step-num">3</span> Auction location (towing)</div>
+    <select id="loc" onchange="calc()">
+      <option value="">-- Select location --</option>
+      <optgroup label="Arizona">
+        <option value="250">AZ — Phoenix</option>
+        <option value="250">AZ — Phoenix Manheim</option>
+        <option value="250">AZ — Phoenix North</option>
+        <option value="300">AZ — Tucson</option>
+      </optgroup>
+      <optgroup label="California">
+        <option value="150">CA — Anaheim</option>
+        <option value="150">CA — Adelanto</option>
+        <option value="275">CA — Antelope</option>
+        <option value="175">CA — Bakersfield</option>
+        <option value="425">CA — So Sacramento</option>
+        <option value="150">CA — Rancho Cucamonga</option>
+        <option value="150">CA — Colton</option>
+        <option value="150">CA — Carson / Gardena</option>
+        <option value="450">CA — East Bay / Bay Point</option>
+        <option value="225">CA — Fresno</option>
+        <option value="400">CA — Fremont</option>
+        <option value="150">CA — Fontana</option>
+        <option value="350">CA — Hayward</option>
+        <option value="150">CA — High Desert / Hesperia</option>
+        <option value="150">CA — Long Beach</option>
+        <option value="150">CA — Los Angeles South</option>
+        <option value="150">CA — Los Angeles</option>
+        <option value="150">CA — Los Angeles (Gardena)</option>
+        <option value="325">CA — Martinez</option>
+        <option value="175">CA — Mentone</option>
+        <option value="475">CA — Napa</option>
+        <option value="150">CA — North Hollywood</option>
+        <option value="150">CA — Perris</option>
+        <option value="525">CA — Redding</option>
+        <option value="150">CA — Riverside</option>
+        <option value="425">CA — Sacramento</option>
+        <option value="425">CA — Sacramento (Cordova)</option>
+        <option value="150">CA — San Bernardino</option>
+        <option value="200">CA — San Diego</option>
+        <option value="200">CA — San Diego Manheim</option>
+        <option value="350">CA — San Jose</option>
+        <option value="150">CA — Santa Clarita</option>
+        <option value="150">CA — Sun Valley</option>
+        <option value="375">CA — Stockton</option>
+        <option value="475">CA — Vallejo</option>
+        <option value="150">CA — Van Nuys</option>
+      </optgroup>
+      <optgroup label="Nevada">
+        <option value="300">NV — Las Vegas West</option>
+        <option value="450">NV — Reno</option>
+      </optgroup>
+      <optgroup label="Utah">
+        <option value="600">UT — Ogden</option>
+        <option value="600">UT — Provo</option>
+        <option value="600">UT — Salt Lake City</option>
+        <option value="600">UT — Salt Lake City (Ogden)</option>
+      </optgroup>
+      <optgroup label="Idaho">
+        <option value="600">ID — Boise</option>
+      </optgroup>
+      <optgroup label="Oregon">
+        <option value="575">OR — Eugene</option>
+        <option value="625">OR — Portland North</option>
+        <option value="625">OR — Portland South</option>
+      </optgroup>
+      <optgroup label="Washington">
+        <option value="600">WA — Graham</option>
+        <option value="625">WA — North Seattle</option>
+        <option value="625">WA — Seattle</option>
+        <option value="625">WA — Seattle Manheim</option>
+        <option value="775">WA — Pasco</option>
+        <option value="725">WA — Spokane</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- Step 4 -->
+  <div class="card">
+    <div class="step-label"><span class="step-num">4</span> Service type</div>
+    <div class="btn-group">
+      <button class="btn" id="bf" onclick="setSvc('full')">Full dismantling — $550</button>
+      <button class="btn" id="bh" onclick="setSvc('half')">Half-cut — $450</button>
+      <button class="btn" id="bn" onclick="setSvc('none')">No service</button>
+    </div>
+  </div>
+
+  <!-- Step 5 Summary -->
+  <div class="summary-card">
+    <div class="step-label"><span class="step-num">5</span> Cost summary</div>
+    <div id="sb"><p class="ph">Select an auction and enter a bid to see your cost breakdown.</p></div>
+  </div>
+
+  <footer>Fee schedules current as of early 2025. Auction buyer fees and towing costs are subject to change without notice. Always verify current fees directly with the auction and your transport provider before bidding. Al Fursan is not responsible for discrepancies between estimated and actual costs.</footer>
+</div>
+
+<script>
+const ADMIN=50,TITLE_C=20,TITLE_I=20,GATE_C=95,SVC_I=79,ENV_C=15,ENV_I=10;
+const SVC_FEES={full:550,half:450,none:0};
+
+// Copart licensed, non-clean title, secured payment (official schedule Mar 2025)
+const CB=[
+  [0,49.99,1],[50,99.99,1],[100,199.99,25],[200,299.99,60],
+  [300,349.99,85],[350,399.99,100],[400,449.99,125],[450,499.99,135],
+  [500,549.99,145],[550,599.99,155],[600,699.99,170],[700,799.99,195],
+  [800,899.99,215],[900,999.99,230],[1000,1199.99,250],[1200,1299.99,270],
+  [1300,1399.99,285],[1400,1499.99,300],[1500,1599.99,315],[1600,1699.99,330],
+  [1700,1799.99,350],[1800,1999.99,370],[2000,2399.99,390],[2400,2499.99,425],
+  [2500,2999.99,460],[3000,3499.99,505],[3500,3999.99,555],[4000,4499.99,600],
+  [4500,4999.99,625],[5000,5499.99,650],[5500,5999.99,675],[6000,6499.99,700],
+  [6500,6999.99,720],[7000,7499.99,755],[7500,7999.99,775],[8000,8499.99,800],
+  [8500,8999.99,820],[9000,9999.99,820],[10000,10499.99,850],[10500,10999.99,850],
+  [11000,11499.99,850],[11500,11999.99,860],[12000,12499.99,875],[12500,14999.99,890]
+];
+// Copart live bid virtual fee (official schedule)
+const CL=[
+  [0,99.99,0],[100,499.99,50],[500,999.99,65],[1000,1499.99,85],
+  [1500,1999.99,95],[2000,3999.99,110],[4000,5999.99,125],[6000,7999.99,145],[8000,1e9,160]
+];
+const IB=[
+  [0,49.99,25],[50,99.99,45],[100,199.99,80],[200,299.99,130],
+  [300,349.99,137.5],[350,399.99,145],[400,449.99,175],[450,499.99,185],
+  [500,549.99,205],[550,599.99,210],[600,699.99,240],[700,799.99,270],
+  [800,899.99,295],[900,999.99,320],[1000,1199.99,375],[1200,1299.99,395],
+  [1300,1399.99,410],[1400,1499.99,430],[1500,1599.99,445],[1600,1699.99,465],
+  [1700,1799.99,485],[1800,1999.99,510],[2000,2399.99,535],[2400,2499.99,570],
+  [2500,2999.99,610],[3000,3499.99,655],[3500,3999.99,705],[4000,4499.99,725],
+  [4500,4999.99,750],[5000,5499.99,775],[5500,5999.99,800],[6000,6499.99,825],
+  [6500,6999.99,845],[7000,7499.99,880],[7500,7999.99,900],[8000,8499.99,925],
+  [8500,9999.99,945]
+];
+const IL=[
+  [0,99.99,0],[100,499.99,50],[500,999.99,65],[1000,1499.99,85],
+  [1500,1999.99,95],[2000,3999.99,110],[4000,5999.99,125],[6000,7999.99,145],[8000,1e9,160]
+];
+
+function lkp(t,b){for(const[lo,hi,f]of t)if(b>=lo&&b<=hi)return f;return 0;}
+function cBuyer(b){return b>=15000?b*0.06:lkp(CB,b);}
+function cLive(b){return lkp(CL,b);}
+function iBuyer(b){return b>=10000?b*0.06:lkp(IB,b);}
+function iLive(b){return lkp(IL,b);}
+function fmt(n){return'$'+Math.round(n).toLocaleString();}
+function fmtD(n){return'$'+n.toLocaleString(undefined,{minimumFractionDigits:2,maximumFractionDigits:2});}
+
+let auction=null,svc=null;
+
+function setA(a){
+  auction=a;
+  document.getElementById('bc').className='btn'+(a==='copart'?' sel-copart':'');
+  document.getElementById('bi').className='btn'+(a==='iaa'?' sel-iaa':'');
+  calc();
+}
+function setSvc(s){
+  svc=s;
+  document.getElementById('bf').className='btn'+(s==='full'?' sel-full':'');
+  document.getElementById('bh').className='btn'+(s==='half'?' sel-half':'');
+  document.getElementById('bn').className='btn'+(s==='none'?' sel-none':'');
+  calc();
+}
+
+function calc(){
+  const bid=parseFloat(document.getElementById('bid').value)||0;
+  const locEl=document.getElementById('loc');
+  const tow=locEl.value?parseFloat(locEl.value):null;
+  const sb=document.getElementById('sb');
+  if(!auction||bid<=0){
+    sb.innerHTML='<p class="ph">Select an auction and enter a bid to see your cost breakdown.</p>';
+    return;
+  }
+
+  let buyerFee,liveF,envFee,titleFee,svcFee2,rows='';
+  const badge=auction==='copart'
+    ?'<span class="auction-badge badge-copart">Copart</span>'
+    :'<span class="auction-badge badge-iaa">IAA</span>';
+
+  if(auction==='copart'){
+    buyerFee=cBuyer(bid);liveF=cLive(bid);envFee=ENV_C;titleFee=TITLE_C;svcFee2=GATE_C;
+    rows+=`<tr class="row-sub"><td>Buyer fee (secured, non-clean title)</td><td>${fmtD(buyerFee)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Virtual bid fee (live)</td><td>${fmtD(liveF)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Gate fee</td><td>${fmt(GATE_C)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Environmental fee</td><td>${fmt(envFee)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Title handling fee</td><td>${fmt(titleFee)}</td></tr>`;
+  } else {
+    buyerFee=iBuyer(bid);liveF=iLive(bid);envFee=ENV_I;titleFee=TITLE_I;svcFee2=SVC_I;
+    rows+=`<tr class="row-sub"><td>Buyer fee</td><td>${fmtD(buyerFee)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Internet bid fee (live)</td><td>${fmtD(liveF)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Service fee</td><td>${fmt(svcFee2)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Environmental fee</td><td>${fmt(envFee)}</td></tr>`;
+    rows+=`<tr class="row-sub"><td>Title handling fee</td><td>${fmt(titleFee)}</td></tr>`;
+  }
+
+  const towFee=tow!==null?tow:0;
+  const mySvc=svc?SVC_FEES[svc]:0;
+  const auctionTotal=buyerFee+liveF+envFee+titleFee+svcFee2;
+  const total=bid+auctionTotal+towFee+ADMIN+mySvc;
+  const locName=tow!==null?locEl.options[locEl.selectedIndex].text.split(' — ')[1]:null;
+  const svcLabel=svc==='full'?'Full dismantling':svc==='half'?'Half-cut':null;
+
+  sb.innerHTML=`
+    <table class="fee-table">
+      <tr class="row-main"><td>Bid amount ${badge}</td><td>${fmt(bid)}</td></tr>
+      ${rows}
+      ${locName?`<tr class="row-sub"><td>Towing — ${locName} to Duarte</td><td>${fmt(towFee)}</td></tr>`:''}
+      <tr class="row-sub"><td>Al Fursan Broker Fee</td><td>${fmt(ADMIN)}</td></tr>
+      ${svcLabel?`<tr class="row-sub"><td>${svcLabel}</td><td>${fmt(mySvc)}</td></tr>`:''}
+      <tr class="row-divider"><td></td><td></td></tr>
+      <tr class="row-total"><td>Total estimated cost</td><td>${fmt(total)}</td></tr>
+    </table>
+    ${tow===null?'<p class="note">Select a location above to include towing in your total.</p>':''}
+    <div class="metrics">
+      <div class="metric"><div class="metric-label">Auction fees</div><div class="metric-value">${fmt(auctionTotal)}</div></div>
+      <div class="metric"><div class="metric-label">Towing</div><div class="metric-value">${tow!==null?fmt(towFee):'—'}</div></div>
+      <div class="metric"><div class="metric-label">Your fees</div><div class="metric-value">${fmt(ADMIN+mySvc)}</div></div>
+    </div>
+  `;
+}
+</script>
+</body>
+</html>
